@@ -15,13 +15,13 @@ service Dice {
 
     rpc UserActivity(UserRequest) returns (UserActivityResponse) {
         option (google.api.http) = {
-            get: "/users/:userid/activity"
+            get: "/users/{username}/activity"
         };
     }
 
     rpc UserRepositories(UserRequest) returns (UserRepositoriesResponse) {
         option (google.api.http) = {
-            get: "/users/:userid/repos"
+            get: "/users/{username}/repos"
         };
     }
 
@@ -38,7 +38,7 @@ message UserResponse {
     string display_name = 2;
 }
 message ListUsersResponse {
-    repeated UserResponse user = 1;
+    repeated UserResponse users = 1;
 }
 message ActivityResponse {
     string type = 1;

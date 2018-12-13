@@ -11,7 +11,7 @@ type serverData struct {
 	zerolog.Logger
 }
 
-// NewDiceServer returns an object that implements the  interface
+// CreateAndRegisterServer returns an object that implements the DiceServer interface
 func CreateAndRegisterServer(
 	logger zerolog.Logger,
 	grpcServer *grpc.Server,
