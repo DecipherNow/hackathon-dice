@@ -1,0 +1,20 @@
+# grpc-server
+    grpc_use_tls = false
+    grpc_server_host = ""
+    grpc_server_port = 10000
+
+# gateway-proxy
+    gateway_use_tls = false
+    use_gateway_proxy = true
+    gateway_proxy_host = ""
+    gateway_proxy_port = 8080
+    gateway_serve_anonymous_arrays = false
+
+# tls
+    ca_cert_path = ""
+    server_cert_path = ""
+    server_key_path = ""
+    server_cert_name = ""
+
+# misc
+    verbose_logging = true

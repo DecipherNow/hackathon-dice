@@ -1,0 +1,145 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "dice.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "operationId": "ListUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufListUsersResponse"
+            }
+          }
+        },
+        "tags": [
+          "Dice"
+        ]
+      }
+    },
+    "/users/:userid/activity": {
+      "get": {
+        "operationId": "UserActivity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufUserActivityResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Dice"
+        ]
+      }
+    },
+    "/users/:userid/repos": {
+      "get": {
+        "operationId": "UserRepositories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufUserRepositoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Dice"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufActivityResponse": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufListUsersResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufUserResponse"
+          }
+        }
+      }
+    },
+    "protobufRepositoryResponse": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufUserActivityResponse": {
+      "type": "object",
+      "properties": {
+        "activity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufActivityResponse"
+          }
+        }
+      }
+    },
+    "protobufUserRepositoriesResponse": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufRepositoryResponse"
+          }
+        }
+      }
+    },
+    "protobufUserResponse": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

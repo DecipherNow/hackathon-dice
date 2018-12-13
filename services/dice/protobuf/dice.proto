@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package protobuf;
+
+import "google/api/annotations.proto";
+
+// Interface exported by the server.
+service Dice {
+
+    rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+        option (google.api.http) = {
+            get: "/users"
+        };
+    }
+
+    rpc UserActivity(UserRequest) returns (UserActivityResponse) {
+        option (google.api.http) = {
+            get: "/users/:userid/activity"
+        };
+    }
+
+    rpc UserRepositories(UserRequest) returns (UserRepositoriesResponse) {
+        option (google.api.http) = {
+            get: "/users/:userid/repos"
+        };
+    }
+
+}
+
+message ListUsersRequest {
+
+}
+message UserRequest {
+    string username = 1;
+}
+message UserResponse {
+    string username = 1;
+    string display_name = 2;
+}
+message ListUsersResponse {
+    repeated UserResponse user = 1;
+}
+message ActivityResponse {
+    string type = 1;
+}
+message UserActivityResponse {
+    repeated ActivityResponse activity = 1;
+}
+message RepositoryResponse {
+    string name = 1;
+}
+message UserRepositoriesResponse {
+    repeated RepositoryResponse repository = 1;
+}
