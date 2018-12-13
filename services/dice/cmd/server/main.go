@@ -19,9 +19,9 @@ import (
 	"github.com/lucasmoten/project-2502/services/dice/cmd/server/methods"
 
 	// we don't use this directly, but need it in vendor for gateway grpc plugin
+	_ "github.com/ghodss/yaml"
 	_ "github.com/golang/glog"
 	_ "github.com/grpc-ecosystem/grpc-gateway/runtime"
-	_ "github.com/ghodss/yaml"
 )
 
 func main() {
@@ -78,7 +78,9 @@ func main() {
 		}
 	}
 
-	s := <- sigChan
+	logger.Debug().Str("github_api", viper.GetString("github_api")).Str("github_token", viper.GetString("github_token")).Msg("github config")
+
+	s := <-sigChan
 	logger.Info().Str("signal", s.String()).Msg("shutting down")
 	cancelFunc()
 	grpcServer.Stop()

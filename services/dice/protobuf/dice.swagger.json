@@ -31,7 +31,7 @@
         ]
       }
     },
-    "/users/:userid/activity": {
+    "/users/{username}/activity": {
       "get": {
         "operationId": "UserActivity",
         "responses": {
@@ -45,8 +45,8 @@
         "parameters": [
           {
             "name": "username",
-            "in": "query",
-            "required": false,
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -55,7 +55,7 @@
         ]
       }
     },
-    "/users/:userid/repos": {
+    "/users/{username}/repos": {
       "get": {
         "operationId": "UserRepositories",
         "responses": {
@@ -69,8 +69,8 @@
         "parameters": [
           {
             "name": "username",
-            "in": "query",
-            "required": false,
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -92,7 +92,7 @@
     "protobufListUsersResponse": {
       "type": "object",
       "properties": {
-        "user": {
+        "users": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/protobufUserResponse"
