@@ -2,6 +2,7 @@
 
 orgname="deciphernow"
 cachefolder="github-api-responses"
+weekago=`date +"%Y-%M-%d" -d "last week" | cut -c 1-10`
 
 # Verify environment variable set
 COUNT_GITHUB_TOKEN=$(printenv | grep "GITHUB_TOKEN" -c)
@@ -86,6 +87,23 @@ getrepopage() {
         r=($(curl -s -H "Authorization: token ${GITHUB_TOKEN}" -o ${cachefolder}/org_${orgname}/repos_${pagenumber}.json https://api.github.com/orgs/${orgname}/repos?page=${pagenumber}))
     fi
 }
+getissuepage() {
+    a=${@}
+    pagenumber=1
+    if [ $a -gt 0 ]; then
+        pagenumber=$1
+    fi
+    mkdir -p ${cachefolder}/org_${orgname}/${repo_name}
+    fetchfile=0
+    if [ ! -f ${cachefolder}/org_${orgname}/${repo_name}/issues_${pagenumber}.json ]; then
+        fetchfile=1
+    elif test `find "${cachefolder}/org_${orgname}/${repo_name}/issues_${pagenumber}.json" -mmin +120`; then
+        fetchfile=1
+    fi
+    if [ $fetchfile -gt 0 ]; then
+        r=($(curl -s -H "Authorization: token ${GITHUB_TOKEN}" -o ${cachefolder}/org_${orgname}/${repo_name}/issues_${pagenumber}.json https://api.github.com/repos/${orgname}/${repo_name}/issues?page=${pagenumber}))
+    fi
+}
 
 # ==========================================================
 # API REPORTING
@@ -153,6 +171,40 @@ do
         printf 'Description: %s\n' "$repo_description"
         printf '             License: %20s   Is Private: %5s   Is Fork: %5s\n' "$repo_license" "${repo_private}" "${repo_fork}" 
         printf '             Open Issues: %d\n' "$repo_openissues"
+
+        issuepage=1
+        getissuepage ${issuepage}
+        jqci=1
+        while [ $jqci -gt 0 ]
+        do
+            for rowi in $(cat ${cachefolder}/org_${orgname}/${repo_name}/issues_${issuepage}.json | jq -r '.[] | @base64'); do
+                _jqi() {
+                    echo $rowi | base64 --decode | jq -r ${1}
+                }
+                issue_state=$(_jqi '.state')
+                issue_number=$(_jqi '.number')
+                issue_title=$(_jqi '.title')
+                issue_created=$(_jqi '.created_at' | cut -c 1-10)
+                issue_updated=$(_jqi '.updated_at' | cut -c 1-10)
+                    # "created_at": "2016-09-27T19:05:28Z",
+                    # "updated_at": "2017-09-05T18:48:16Z",
+                if [[ $issue_state = "open" ]]
+                then
+                    if [[ issue_created > weekago ]]; then
+                        printf '             %5s %10s %s \n' "$issue_number" "new" "$issue_title"
+                    elif [[ issue_updated > weekago ]]; then
+                        printf '             %5s %10s %s \n' "$issue_number" "updated" "$issue_title"
+                    else
+                        printf '             %5s %10s %s \n' "$issue_number" "" "$issue_title"
+                    fi
+                fi
+            done
+            # get data for next issue page
+            issuepage=$((issuepage+1))
+            getissuepage ${issuepage}
+            jqci=($(jq '. | length' ${cachefolder}/org_${orgname}/${repo_name}/issues_${issuepage}.json))
+        done
+
         printf '\n\n'
     done
     # get data for next page
