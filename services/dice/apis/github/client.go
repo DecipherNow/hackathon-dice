@@ -10,22 +10,22 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
+	"os"
 	"strconv"
 	"strings"
 
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
 
-// GetMembers will retrieve all members for an organization from GitHub
+// GetMembers will retrieve a page of members for an organization from GitHub
 func (c *Client) GetMembers(pageNumber int) ([]Member, error) {
-	// logger := zerolog.New(os.Stdout).
-	// 	With().Timestamp().Str("service", "dice").Logger().
-	// 	Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
-	// TODO: iterate all pages building up a response array
-
+	logger := zerolog.New(os.Stdout).
+		With().Timestamp().Str("service", "dice").Logger().
+		Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	var ret []Member
 	uri := viper.GetString("github_api") + "orgs/" + viper.GetString("github_org") + "/members?page=" + strconv.Itoa(pageNumber)
+	logger.Debug().Str("uri", uri).Msg("github client called for organization members")
 	resp, err := c.doGet(uri, nil)
 	if err != nil {
 		return ret, fmt.Errorf("error performing request: %v", err)
@@ -47,8 +47,39 @@ func (c *Client) GetMembers(pageNumber int) ([]Member, error) {
 
 // GetUser will retrieve details about a user from GitHub
 func (c *Client) GetUser(login string) (User, error) {
+	logger := zerolog.New(os.Stdout).
+		With().Timestamp().Str("service", "dice").Logger().
+		Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	var ret User
 	uri := viper.GetString("github_api") + "users/" + login
+	logger.Debug().Str("uri", uri).Msg("github client called for user")
+	resp, err := c.doGet(uri, nil)
+	if err != nil {
+		return ret, fmt.Errorf("error performing request: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return ret, errorFromResponse(resp)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return ret, err
+	}
+	jsonErr := json.Unmarshal(body, &ret)
+	if jsonErr != nil {
+		return ret, jsonErr
+	}
+	return ret, nil
+}
+
+// GetOrganizationEvents will retrieve a page of events for an organization from GitHub
+func (c *Client) GetOrganizationEvents(pageNumber int) ([]Event, error) {
+	logger := zerolog.New(os.Stdout).
+		With().Timestamp().Str("service", "dice").Logger().
+		Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	var ret []Event
+	uri := viper.GetString("github_api") + "orgs/" + viper.GetString("github_org") + "/events?page=" + strconv.Itoa(pageNumber)
+	logger.Debug().Str("uri", uri).Msg("github client called for organization events")
 	resp, err := c.doGet(uri, nil)
 	if err != nil {
 		return ret, fmt.Errorf("error performing request: %v", err)

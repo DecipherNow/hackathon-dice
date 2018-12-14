@@ -100,7 +100,19 @@
     "protobufActivityResponse": {
       "type": "object",
       "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "repo_name": {
+          "type": "string"
+        },
         "type": {
+          "type": "string"
+        },
+        "summaryline": {
           "type": "string"
         }
       }
@@ -132,6 +144,12 @@
       "properties": {
         "name": {
           "type": "string"
+        },
+        "team_members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufUserResponse"
+          }
         }
       }
     },
@@ -240,6 +258,12 @@
           "type": "string"
         },
         "display_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar_url": {
           "type": "string"
         }
       }

@@ -40,18 +40,25 @@ message UserRequest {
 message UserResponse {
     string username = 1;
     string display_name = 2;
+    string email = 3;
+    string avatar_url = 4;
 }
 message ListUsersResponse {
     repeated UserResponse users = 1;
 }
 message ActivityResponse {
-    string type = 1;
+    string created_at = 1;
+    string actor = 2;
+    string repo_name = 3;
+    string type = 4;
+    string summaryline = 5;
 }
 message UserActivityResponse {
     repeated ActivityResponse activity = 1;
 }
 message RepositoryResponse {
     string name = 1;
+    repeated UserResponse team_members = 2;
 }
 message UserRepositoriesResponse {
     repeated RepositoryResponse repository = 1;

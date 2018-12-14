@@ -23,3 +23,7 @@
     github_api = "https://api.github.com/"
     github_token = ""
     github_org = "deciphernow"
+    github_age_users = 120
+    github_age_events = 10
+    github_maxpage_users = 3
+    github_maxpage_events = 10
