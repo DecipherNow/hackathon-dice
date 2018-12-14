@@ -25,5 +25,7 @@
     github_org = "deciphernow"
     github_age_users = 120
     github_age_events = 10
+    github_age_repos = 120
     github_maxpage_users = 3
     github_maxpage_events = 10
+    github_maxpage_repos = 4
