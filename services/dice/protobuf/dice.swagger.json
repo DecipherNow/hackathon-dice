@@ -117,6 +117,12 @@
       "properties": {
         "name": {
           "type": "string"
+        },
+        "team_members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufUserResponse"
+          }
         }
       }
     },

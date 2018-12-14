@@ -143,6 +143,8 @@ func (s *serverData) ListUsers(ctx context.Context, request *pb.ListUsersRequest
 			response.Users = append(response.Users, &pb.UserResponse{Username: login, DisplayName: name})
 		}
 	}
+	rowsUsers.Close()
+	db.Close()
 
 	return &response, nil
 }

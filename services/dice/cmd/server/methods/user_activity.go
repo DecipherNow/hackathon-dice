@@ -80,7 +80,11 @@ func (s *serverData) UserActivity(ctx context.Context, request *pb.UserRequest) 
 				// determine summaryline
 				switch event.Type {
 				case "CreateEvent":
-					summaryline = fmt.Sprintf("created %s named %s in %s", event.Payload.RefType, event.Payload.Ref, event.Repo.Name)
+					if event.Payload.RefType == "repository" {
+						summaryline = fmt.Sprintf("created %s named %s", event.Payload.RefType, event.Repo.Name)
+					} else {
+						summaryline = fmt.Sprintf("created %s named %s in %s", event.Payload.RefType, event.Payload.Ref, event.Repo.Name)
+					}
 					break
 				case "DeleteEvent":
 					summaryline = fmt.Sprintf("deleted %s named %s in %s", event.Payload.RefType, event.Payload.Ref, event.Repo.Name)
@@ -153,6 +157,8 @@ func (s *serverData) UserActivity(ctx context.Context, request *pb.UserRequest) 
 		}
 		response.Activity = append(response.Activity, &pb.ActivityResponse{CreatedAt: created_at, Actor: request.Username, RepoName: reponame, Type: eventtype, Summaryline: summaryline})
 	}
+	rowsEvents.Close()
+	db.Close()
 
 	return &response, nil
 
