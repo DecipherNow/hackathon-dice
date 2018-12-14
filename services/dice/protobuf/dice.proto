@@ -52,6 +52,7 @@ message UserActivityResponse {
 }
 message RepositoryResponse {
     string name = 1;
+    repeated UserResponse team_members = 2;
 }
 message UserRepositoriesResponse {
     repeated RepositoryResponse repository = 1;
