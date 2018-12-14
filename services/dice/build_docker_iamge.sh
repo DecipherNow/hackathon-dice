@@ -17,7 +17,7 @@ mkdir -p "$BUILDFILES"
 (
 	cp "settings.toml" "$BUILDFILES/."
 	#cd $DOCKERDIR
-	docker build -t deciphernow/dice:latest .
+	docker build -t deciphernow/hackathon:dice .
 	rm -rf $BUILDFILES
 )
 
