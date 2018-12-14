@@ -119,7 +119,7 @@ func (c *Client) GetRepositories(pageNumber int) ([]Repository, error) {
 	if jsonErr != nil {
 		return ret, jsonErr
 	}
-	fmt.Printf("Headers: %v", resp.Header)
+	//fmt.Printf("Headers: %v", resp.Header)
 	return ret, nil
 }
 

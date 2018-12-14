@@ -2,9 +2,11 @@ package methods
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
-	"golang.org/x/net/context"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/spf13/viper"
+	"golang.org/x/net/context"
 
 	gc "github.com/lucasmoten/project-2502/services/dice/apis/github"
 	pb "github.com/lucasmoten/project-2502/services/dice/protobuf"
@@ -40,10 +42,10 @@ func (s *serverData) ListRepositories(ctx context.Context, request *pb.ListRepos
 	}
 
 	duration := time.Since(then)
-	dataisold := (duration.Hours() > 2)
+	dataisold := (duration.Minutes() > float64(viper.GetInt("github_age_repos")))
 
 	if dataisold {
-		updated_at = time.Now().Format(time.RFC3339)
+		updated_at = time.Now().UTC().Format(time.RFC3339)
 
 		githubclient, err := gc.NewClient()
 		if err != nil {
@@ -75,7 +77,7 @@ func (s *serverData) ListRepositories(ctx context.Context, request *pb.ListRepos
 			return nil, err
 		}
 
-		for pageHasResults {
+		for pageHasResults && pageNumber < viper.GetInt("github_maxpage_repos") {
 			pageNumber++
 
 			repositories, err := githubclient.GetRepositories(pageNumber)
@@ -106,7 +108,7 @@ func (s *serverData) ListRepositories(ctx context.Context, request *pb.ListRepos
 					_, err := stmtRepoUpdate.Exec(repo.NodeID, repo.Name, repo.FullName,
 						repo.Description, repo.Language, repo.DefaultBranch, repo.CreatedAt, repo.PushedAt, repo.UpdatedAt, repo.Fork,
 						repo.Private, repo.Archived, repo.ForksCount, repo.NetworkCount, repo.OpenIssuesCount,
-						repo.StargazersCount, repo.SubscribersCount, repo.WatchersCount, repo.Size)
+						repo.StargazersCount, repo.SubscribersCount, repo.WatchersCount, repo.Size, repo.ID)
 					if err != nil {
 						db.Close()
 						return nil, err
@@ -148,7 +150,7 @@ func (s *serverData) ListRepositories(ctx context.Context, request *pb.ListRepos
 			}
 		}
 	}
-	// Users in the database reflect the current state
+	// Repos in the database reflect the current state
 	rowsRepositories, err := db.Query("select  name, full_name, description, " +
 		"language, default_branch, created_at, pushed_at, updated_at, fork, private, archived, " +
 		"forks_count, network_count, open_issues_count, stargazers_count, subscribers_count, " +
