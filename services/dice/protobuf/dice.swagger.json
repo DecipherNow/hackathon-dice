@@ -156,6 +156,12 @@
         },
         "display_name": {
           "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": "string"
         }
       }
     }

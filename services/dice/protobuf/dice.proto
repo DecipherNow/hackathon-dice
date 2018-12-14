@@ -36,6 +36,8 @@ message UserRequest {
 message UserResponse {
     string username = 1;
     string display_name = 2;
+    string email = 3;
+    string avatar_url = 4;
 }
 message ListUsersResponse {
     repeated UserResponse users = 1;
