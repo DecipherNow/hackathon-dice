@@ -15,12 +15,28 @@
     "application/json"
   ],
   "paths": {
+    "/repositories": {
+      "get": {
+        "operationId": "ListRepositories",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/protobufListRepositoriesResponse"
+            }
+          }
+        },
+        "tags": [
+          "Dice"
+        ]
+      }
+    },
     "/users": {
       "get": {
         "operationId": "ListUsers",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/protobufListUsersResponse"
             }
@@ -36,7 +52,7 @@
         "operationId": "UserActivity",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/protobufUserActivityResponse"
             }
@@ -60,7 +76,7 @@
         "operationId": "UserRepositories",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/protobufUserRepositoriesResponse"
             }
@@ -101,6 +117,17 @@
         }
       }
     },
+    "protobufListRepositoriesResponse": {
+      "type": "object",
+      "properties": {
+        "repositories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufRepositoryResponse2"
+          }
+        }
+      }
+    },
     "protobufListUsersResponse": {
       "type": "object",
       "properties": {
@@ -123,6 +150,82 @@
           "items": {
             "$ref": "#/definitions/protobufUserResponse"
           }
+        }
+      }
+    },
+    "protobufRepositoryResponse2": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "NodeID": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Language": {
+          "type": "string"
+        },
+        "DefaultBranch": {
+          "type": "string"
+        },
+        "CreatedAt": {
+          "type": "string"
+        },
+        "PushedAt": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string"
+        },
+        "Fork": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "Private": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "Archived": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "ForksCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "NetworkCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "OpenIssuesCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "StargazersCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "SubscribersCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "WatchersCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "Size": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
