@@ -126,21 +126,23 @@ func (s *serverData) ListUsers(ctx context.Context, request *pb.ListUsersRequest
 	}
 
 	// Users in the database reflect the current state
-	rowsUsers, err := db.Query("select login, name from githubusers order by name asc")
+	rowsUsers, err := db.Query("select login, name, email, avatar_url from githubusers order by name asc")
 	if err != nil {
 		db.Close()
 		return nil, err
 	}
 	login := ""
 	name := ""
+	email := ""
+	avatar_url := ""
 	for rowsUsers.Next() {
-		err = rowsUsers.Scan(&login, &name)
+		err = rowsUsers.Scan(&login, &name, &email, &avatar_url)
 		if err != nil {
 			db.Close()
 			return nil, err
 		}
 		if login != "__cachestate__" {
-			response.Users = append(response.Users, &pb.UserResponse{Username: login, DisplayName: name})
+			response.Users = append(response.Users, &pb.UserResponse{Username: login, DisplayName: name, Email: email, AvatarUrl: avatar_url})
 		}
 	}
 	rowsUsers.Close()
