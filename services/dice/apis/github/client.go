@@ -10,13 +10,14 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/viper"
 )
 
 // GetMembers will retrieve all members for an organization from GitHub
-func (c *Client) GetMembers() ([]Member, error) {
+func (c *Client) GetMembers(pageNumber int) ([]Member, error) {
 	// logger := zerolog.New(os.Stdout).
 	// 	With().Timestamp().Str("service", "dice").Logger().
 	// 	Output(zerolog.ConsoleWriter{Out: os.Stderr})
@@ -24,7 +25,7 @@ func (c *Client) GetMembers() ([]Member, error) {
 	// TODO: iterate all pages building up a response array
 
 	var ret []Member
-	uri := viper.GetString("github_api") + "orgs/" + viper.GetString("github_org") + "/members?page=1"
+	uri := viper.GetString("github_api") + "orgs/" + viper.GetString("github_org") + "/members?page=" + strconv.Itoa(pageNumber)
 	resp, err := c.doGet(uri, nil)
 	if err != nil {
 		return ret, fmt.Errorf("error performing request: %v", err)
