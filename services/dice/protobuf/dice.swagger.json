@@ -84,7 +84,19 @@
     "protobufActivityResponse": {
       "type": "object",
       "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "repo_name": {
+          "type": "string"
+        },
         "type": {
+          "type": "string"
+        },
+        "summaryline": {
           "type": "string"
         }
       }

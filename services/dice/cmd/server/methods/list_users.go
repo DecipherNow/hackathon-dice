@@ -5,6 +5,7 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 
 	gc "github.com/lucasmoten/project-2502/services/dice/apis/github"
@@ -39,11 +40,11 @@ func (s *serverData) ListUsers(ctx context.Context, request *pb.ListUsersRequest
 		return nil, err
 	}
 	duration := time.Since(then)
-	dataisold := (duration.Hours() > 2)
+	dataisold := (duration.Minutes() > float64(viper.GetInt("github_age_users")))
 
 	// If data is old, then fetch pages from github and update table
 	if dataisold {
-		updated_at = time.Now().Format(time.RFC3339)
+		updated_at = time.Now().UTC().Format(time.RFC3339)
 		// Get from GitHub
 		githubclient, err := gc.NewClient()
 		if err != nil {
@@ -62,7 +63,7 @@ func (s *serverData) ListUsers(ctx context.Context, request *pb.ListUsersRequest
 			db.Close()
 			return nil, err
 		}
-		for pageHasResults {
+		for pageHasResults && pageNumber < viper.GetInt("github_maxpage_users") {
 			pageNumber++
 			members, err := githubclient.GetMembers(pageNumber)
 			if err != nil {
@@ -125,7 +126,7 @@ func (s *serverData) ListUsers(ctx context.Context, request *pb.ListUsersRequest
 	}
 
 	// Users in the database reflect the current state
-	rowsUsers, err := db.Query("select login, name from githubusers order by name desc")
+	rowsUsers, err := db.Query("select login, name from githubusers order by name asc")
 	if err != nil {
 		db.Close()
 		return nil, err
