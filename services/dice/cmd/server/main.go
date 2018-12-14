@@ -5,14 +5,13 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
+	_ "github.com/pkg/errors"
+	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
-
-	_ "github.com/pkg/errors"
-	"github.com/rs/zerolog"
-	"github.com/spf13/viper"
 
 	"google.golang.org/grpc"
 
@@ -46,6 +45,7 @@ func main() {
 
 	logger.Debug().Msg("initializing database")
 	db, err := sql.Open("sqlite3", "./dice.db")
+
 	if err != nil {
 		logger.Fatal().AnErr("sqlite init", err).Msg("error opening sqlite db")
 	}
@@ -53,14 +53,39 @@ func main() {
 	if err != nil {
 		logger.Fatal().AnErr("sqlite init", err).Msg("error creating table")
 	}
-	stmt, err := db.Prepare("insert into githubusers (login, avatar_url, name, email, created_at, updated_at) values (?,?,?,?,?,?) on conflict(login) do update set login=login where 1=0")
+
+	_, err = db.Exec("create table if not exists `repositories` (`id` int  primary key, `node_id` VARCHAR(256) NULL, `name` VARCHAR(128) NULL, " +
+		"`full_name` VARCHAR(256) NULL, `description` VARCHAR(256) NULL, `language` VARCHAR(32) NULL, `default_branch` VARCHAR(32) NULL, `created_at` TIMESTAMP NULL, `pushed_at` TIMESTAMP NULL, `updated_at` TIMESTAMP NULL," +
+		"`fork` bool NULL,`private` bool NULL,`archived` bool NULL, `forks_count` int NULL, `network_count` int NULL, `open_issues_count` int NULL, " +
+		"`stargazers_count` int NULL, `subscribers_count` int NULL, `watchers_count` int NULL, `size` int NULL)")
 	if err != nil {
-		logger.Fatal().AnErr("sqlite init", err).Msg("error preparing statement")
+		logger.Fatal().AnErr("sqlite init", err).Msg("error creating table")
 	}
-	_, err = stmt.Exec("__cachestate__", "https://lcsc.academyofmine.com/wp-content/uploads/2017/06/Test-Logo.svg.png", "Test User", "test@deciphernow.com", "2018-12-13T00:00:00Z", "2018-12-13T00:00:00Z")
-	if err != nil {
-		logger.Fatal().AnErr("sqlite init", err).Msg("error inserting test record")
-	}
+
+	//stmt, err := db.Prepare("insert into githubusers (login, avatar_url, name, email, created_at, updated_at) values (?,?,?,?,?,?) on conflict(login) do update set login=login where 1=0")
+	//if err != nil {
+	//	logger.Fatal().AnErr("sqlite init", err).Msg("error preparing statement")
+	//}
+	//
+	//_, err = stmt.Exec("__cachestate__", "https://lcsc.academyofmine.com/wp-content/uploads/2017/06/Test-Logo.svg.png", "Test User", "test@deciphernow.com", "2018-12-13T00:00:00Z", "2018-12-13T00:00:00Z")
+	//if err != nil {
+	//	logger.Fatal().AnErr("sqlite init", err).Msg("error inserting test record")
+	//}
+
+	//repos, err := db.Prepare("insert into repositories (id, node_id, name," +
+	//	" full_name, description, created_at, pushed_at, updated_at, fork," +
+	//	" private, archived, forks_count, network_count, open_issues_count," +
+	//	" stargazers_count, subscribers_count, watchers_count, size) values" +
+	//	" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) on conflict(id) do update set id=id where 1=0")
+	//if err != nil {
+	//	logger.Fatal().AnErr("sqlite init", err).Msg("error preparing statement")
+	//}
+	//
+	//_, err = repos.Exec("0", "TEST" , "__cachestate__", "TEST", "TEST", "2018-12-13T00:00:00Z", "2018-12-13T00:00:00Z", "2018-12-13T00:00:00Z", false, false, false, 1, 1, 1, 1, 1, 1, 1)
+	//if err != nil {
+	//	logger.Fatal().AnErr("sqlite init", err).Msg("error inserting test record")
+	//}
+
 	db.Close()
 
 	if tlsServerConf, err = buildServerTLSConfigIfNeeded(logger); err != nil {

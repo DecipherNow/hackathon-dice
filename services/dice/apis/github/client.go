@@ -68,6 +68,30 @@ func (c *Client) GetUser(login string) (User, error) {
 	return ret, nil
 }
 
+// GetRepositories will retrieve details about a repository from GitHub
+func (c *Client) GetRepositories(pageNumber int) ([]Repository, error) {
+	var ret []Repository
+	uri := viper.GetString("github_api") + "orgs/" + viper.GetString("github_org") + "/repos?page=" + strconv.Itoa(pageNumber)
+	resp, err := c.doGet(uri, nil)
+	if err != nil {
+		return ret, fmt.Errorf("error performing request: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return ret, errorFromResponse(resp)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return ret, err
+	}
+	jsonErr := json.Unmarshal(body, &ret)
+	if jsonErr != nil {
+		return ret, jsonErr
+	}
+	fmt.Printf("Headers: %v", resp.Header)
+	return ret, nil
+}
+
 // -----------------------------------------------
 // Most stuff below here is pretty boilerplate
 
