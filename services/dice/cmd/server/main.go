@@ -51,15 +51,27 @@ func main() {
 	}
 	_, err = db.Exec("create table if not exists `githubusers` (`login` VARCHAR(64) primary key, `avatar_url` VARCHAR(256) NULL, `name` VARCHAR(128) NULL, `email` VARCHAR(256) NULL, `created_at` VARCHAR(32) NULL, `updated_at` VARCHAR(32) NULL)")
 	if err != nil {
-		logger.Fatal().AnErr("sqlite init", err).Msg("error creating table")
+		logger.Fatal().AnErr("sqlite init", err).Msg("error creating table for githubusers")
 	}
-	stmt, err := db.Prepare("insert into githubusers (login, avatar_url, name, email, created_at, updated_at) values (?,?,?,?,?,?) on conflict(login) do update set login=login where 1=0")
+	stmtGithubUsers, err := db.Prepare("insert into githubusers (login, avatar_url, name, email, created_at, updated_at) values (?,?,?,?,?,?) on conflict(login) do update set login=login where 1=0")
 	if err != nil {
-		logger.Fatal().AnErr("sqlite init", err).Msg("error preparing statement")
+		logger.Fatal().AnErr("sqlite init", err).Msg("error preparing statement to insert githubusers cachestate")
 	}
-	_, err = stmt.Exec("__cachestate__", "https://lcsc.academyofmine.com/wp-content/uploads/2017/06/Test-Logo.svg.png", "Test User", "test@deciphernow.com", "2018-12-13T00:00:00Z", "2018-12-13T00:00:00Z")
+	_, err = stmtGithubUsers.Exec("__cachestate__", "https://lcsc.academyofmine.com/wp-content/uploads/2017/06/Test-Logo.svg.png", "Test User", "test@deciphernow.com", "2018-12-13T00:00:00Z", "2018-12-13T00:00:00Z")
 	if err != nil {
-		logger.Fatal().AnErr("sqlite init", err).Msg("error inserting test record")
+		logger.Fatal().AnErr("sqlite init", err).Msg("error inserting test record for githubusers")
+	}
+	_, err = db.Exec("create table if not exists `githubevents` (`id` varchar(32) primary key, created_at VARCHAR(32), actor VARCHAR(64), repo_name VARCHAR(128), type VARCHAR(32), action VARCHAR(32) null, payload_comment_body TEXT null, payload_issue_number INT null, payload_issue_title TEXT null, payload_issue_body TEXT null, payload_pr_number INT null, payload_pr_title TEXT null, payload_pr_body TEXT null, payload_pr_merged_dt VARCHAR(32) null, payload_pr_merged VARCHAR(5) null, ref VARCHAR(128) null, ref_type VARCHAR(32) null, payload_size INT null, summaryline TEXT null)")
+	if err != nil {
+		logger.Fatal().AnErr("sqlite init", err).Msg("error creating table for githubevents")
+	}
+	stmtGithubEvents, err := db.Prepare("insert into githubevents (id, created_at, actor, repo_name, type) values (?, ?, ?, ?, ?) on conflict(id) do update set id=id where 1=0")
+	if err != nil {
+		logger.Fatal().AnErr("sqlite init", err).Msg("error preparing statement to insert githubevents cachestate")
+	}
+	_, err = stmtGithubEvents.Exec("0", "2018-12-13T00:00:00Z", "__cachestate__", "*/*", "CacheEvent")
+	if err != nil {
+		logger.Fatal().AnErr("sqlite init", err).Msg("error inserting test record for githubusers")
 	}
 	db.Close()
 
