@@ -25,11 +25,20 @@ service Dice {
         };
     }
 
+
     rpc ListRepositories (ListRepositoriesRequest) returns (ListRepositoriesResponse) {
         option (google.api.http) = {
-                get: "/repositories"
+                get: "/repos"
             };
     }
+
+    rpc RepoActivity(RepoRequest) returns (RepoActivityResponse) {
+        option (google.api.http) = {
+            get: "/repos/{orgname}/{reponame}/activity"
+        };
+    }
+
+
 }
 
 message ListUsersRequest {
@@ -63,6 +72,7 @@ message RepositoryResponse {
 message UserRepositoriesResponse {
     repeated RepositoryResponse repository = 1;
 }
+
 message RepositoryResponse2 {
     int64 ID = 1;
     string NodeID = 2;
@@ -89,4 +99,11 @@ message ListRepositoriesRequest {
 }
 message ListRepositoriesResponse {
     repeated RepositoryResponse2 repositories = 1;
+}
+message RepoRequest {
+    string orgname = 1;
+    string reponame = 2;
+}
+message RepoActivityResponse {
+    repeated ActivityResponse activity = 1;
 }

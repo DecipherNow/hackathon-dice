@@ -15,12 +15,12 @@
     "application/json"
   ],
   "paths": {
-    "/repositories": {
+    "/repos": {
       "get": {
         "operationId": "ListRepositories",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/protobufListRepositoriesResponse"
             }
@@ -31,12 +31,42 @@
         ]
       }
     },
+    "/repos/{orgname}/{reponame}/activity": {
+      "get": {
+        "operationId": "RepoActivity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufRepoActivityResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "orgname",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "reponame",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Dice"
+        ]
+      }
+    },
     "/users": {
       "get": {
         "operationId": "ListUsers",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/protobufListUsersResponse"
             }
@@ -52,7 +82,7 @@
         "operationId": "UserActivity",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/protobufUserActivityResponse"
             }
@@ -76,7 +106,7 @@
         "operationId": "UserRepositories",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/protobufUserRepositoriesResponse"
             }
@@ -135,6 +165,17 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/protobufUserResponse"
+          }
+        }
+      }
+    },
+    "protobufRepoActivityResponse": {
+      "type": "object",
+      "properties": {
+        "activity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufActivityResponse"
           }
         }
       }
